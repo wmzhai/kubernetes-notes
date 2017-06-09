@@ -23,6 +23,7 @@ wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-
 apt update
 apt install virtualbox-5.1 -y
 apt install dkms
+VBoxManage --version
 ```
 
 ## 安装kubectl
