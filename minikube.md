@@ -8,13 +8,11 @@
 
 ## 安装VirtualBox
 
- /etc/apt/sources.list添加下面代码
-
 ```
-deb http://download.virtualbox.org/virtualbox/debian xenial contrib
+echo "deb http://download.virtualbox.org/virtualbox/debian xenial contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
 ```
 
-添加oracle pub key
+添加pub key
 
 ```
 wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-key add -
@@ -23,7 +21,7 @@ wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-
 如下安装，安装过程中会自动安装qt和sdl
 ```
 apt update
-apt install virtualbox-5.1
+apt install virtualbox-5.1 -y
 apt install dkms
 ```
 
