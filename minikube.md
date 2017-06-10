@@ -8,11 +8,13 @@
 
 ## 安装VirtualBox
 
+ /etc/apt/sources.list添加下面代码
+
 ```
-echo "deb http://download.virtualbox.org/virtualbox/debian xenial contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
+deb http://download.virtualbox.org/virtualbox/debian xenial contrib
 ```
 
-添加pub key
+添加oracle pub key
 
 ```
 wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-key add -
@@ -21,15 +23,15 @@ wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-
 如下安装，安装过程中会自动安装qt和sdl
 ```
 apt update
-apt install virtualbox-5.1 -y
+apt install virtualbox-5.1
 apt install dkms
-VBoxManage --version
 ```
 
 ## 安装kubectl
 
 
 ```
+apt install curl
 curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
 chmod +x ./kubectl
 mv ./kubectl /usr/local/bin/kubectl
@@ -57,7 +59,7 @@ root@ubuntu:~# minikube start
 Starting local Kubernetes v1.6.4 cluster...
 Starting VM...
 Downloading Minikube ISO
- 89.51 MB / 89.51 MB [==============================================] 100.00% 0s
+ 65.69 MB / 89.51 MB [=================================>-----------]  73.38% 15s
 Moving files into cluster...
 Setting up certs...
 Starting cluster components...
@@ -115,58 +117,6 @@ Kubernetes master is running at https://192.168.99.100:8443
 To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 ```
 
-## 停止minikube
-
-```
-root@ubuntu:~# minikube stop
-Stopping local Kubernetes cluster...
-Machine stopped.
-root@ubuntu:~# kubectl get pod
-Unable to connect to the server: dial tcp 192.168.99.100:8443: getsockopt: no route to host
-```
-
-## 再启动minikube
-
-
-```
-root@ubuntu:~# minikube start
-Starting local Kubernetes v1.6.4 cluster...
-Starting VM...
-Moving files into cluster...
-Setting up certs...
-Starting cluster components...
-Connecting to cluster...
-Setting up kubeconfig...
-Kubectl is now configured to use the cluster.
-
-root@ubuntu:~# kubectl get pod
-NAME                             READY     STATUS    RESTARTS   AGE
-hello-minikube-938614450-0nkjl   1/1       Running   0          6m
-
-root@ubuntu:~# kubectl cluster-info
-Kubernetes master is running at https://192.168.99.100:8443
-
-To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
-
-root@ubuntu:~# curl $(minikube service hello-minikube --url)
-CLIENT VALUES:
-client_address=172.17.0.1
-command=GET
-real path=/
-query=nil
-request_version=1.1
-request_uri=http://192.168.99.100:8080/
-
-SERVER VALUES:
-server_version=nginx: 1.10.0 - lua: 10001
-
-HEADERS RECEIVED:
-accept=*/*
-host=192.168.99.100:31264
-user-agent=curl/7.47.0
-BODY:
--no body in request-
-```
 
 ## 安装Docker
 
@@ -217,9 +167,66 @@ eval $(minikube docker-env -u)
 docker build -t hello-node:v1 .
 ```
 
+## 创建一个Deployment
+
+使用`kubectl run`指令创建一个Deployment，如下
+```
+kubectl run hello-node --image=hello-node:v1 --port=8080
+```
+
+可以查看deployment和pod，如下
+```
+kubectl get deployments
+kubectl get pods
+```
+
+## 创建一个Service
+
+```
+kubectl expose deployment hello-node --type=LoadBalancer
+kubectl get services
+```
+
+在浏览器里面打开一个service如下
+
+```
+minikube service hello-node
+```
+
+## 更新应用
+
+修改server.js,返回新的信息如下
+```
+response.end('Hello World Again!');
+```
+
+然后新建image如下
+```
+docker build -t hello-node:v2 .
+```
+
+再通过如下指令，更新deployment里的image
+```
+kubectl set image deployment/hello-node hello-node=hello-node:v2
+```
+
+## 清理内容
+
+```
+kubectl delete service hello-node
+kubectl delete deployment hello-node
+```
 
 
+## 停止minikube
 
+```
+root@ubuntu:~# minikube stop
+Stopping local Kubernetes cluster...
+Machine stopped.
+root@ubuntu:~# kubectl get pod
+Unable to connect to the server: dial tcp 192.168.99.100:8443: getsockopt: no route to host
+```
 
 
 
