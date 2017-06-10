@@ -8,13 +8,11 @@
 
 ## 安装VirtualBox
 
- /etc/apt/sources.list添加下面代码
-
 ```
-deb http://download.virtualbox.org/virtualbox/debian xenial contrib
+echo "deb http://download.virtualbox.org/virtualbox/debian xenial contrib" | sudo tee /etc/apt/sources.list.d/virtualbox.list
 ```
 
-添加oracle pub key
+添加pub key
 
 ```
 wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-key add -
@@ -23,15 +21,15 @@ wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-
 如下安装，安装过程中会自动安装qt和sdl
 ```
 apt update
-apt install virtualbox-5.1
+apt install virtualbox-5.1 -y
 apt install dkms
+VBoxManage --version
 ```
 
 ## 安装kubectl
 
 
 ```
-apt install curl
 curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
 chmod +x ./kubectl
 mv ./kubectl /usr/local/bin/kubectl
@@ -59,7 +57,7 @@ root@ubuntu:~# minikube start
 Starting local Kubernetes v1.6.4 cluster...
 Starting VM...
 Downloading Minikube ISO
- 65.69 MB / 89.51 MB [=================================>-----------]  73.38% 15s
+ 89.51 MB / 89.51 MB [==============================================] 100.00% 0s
 Moving files into cluster...
 Setting up certs...
 Starting cluster components...
