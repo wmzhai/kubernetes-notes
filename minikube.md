@@ -179,16 +179,49 @@ sudo apt-get update
 sudo apt-get install docker-engine -y
 ```
 
-## Installing kubelet and kubeadm
+## 创建一个Node.js应用
+
+新建目录hellonode,里面新建server.js，内容如下
 
 ```
-apt-get update && apt-get install -y apt-transport-https
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
-deb http://apt.kubernetes.io/ kubernetes-xenial main
-EOF
-apt-get update
-apt-get install -y kubelet kubeadm kubernetes-cni
+var http = require('http');
+
+var handleRequest = function(request, response) {
+  console.log('Received request for URL: ' + request.url);
+  response.writeHead(200);
+  response.end('Hello World!');
+};
+var www = http.createServer(handleRequest);
+www.listen(8080);
 ```
+
+再建一个Dockerfile,内容如下
+
+```
+FROM mhart/alpine-node
+EXPOSE 8080
+COPY server.js .
+CMD node server.js
+```
+
+通过下述指令确保使用了Minikube Docker daemon
+```
+eval $(minikube docker-env)
+```
+
+未来可以通过如下指令取消
+```
+eval $(minikube docker-env -u)
+```
+
+最后构建Docker Image如下
+```
+docker build -t hello-node:v1 .
+```
+
+
+
+
+
 
 
