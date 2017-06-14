@@ -7,3 +7,5 @@
 * shared network and data volumes 
 * routable IP address
 * mortal
+
+![](img/pods.png)
