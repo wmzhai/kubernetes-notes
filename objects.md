@@ -58,3 +58,72 @@ kubectl create -f nginx-deployment.yaml --record
 * kind 什么类型的对象
 * metadata 用来唯一确认(uniquely identify)这个对象的数据，包括一个**name** 和可选的**namespace**
 * spec 不同类型的spec的具体格式都不相同
+
+## Names
+
+k8s所有对象都被Name和UID唯一识别。针对非唯一属性，k8s提供labels和annotations
+
+### Names
+
+用户提供，  Only one object of a given kind can have a given name at a time。
+对象删除以后，新的对象可以使用同样的名字。
+
+### UIDs
+
+k8s自动生成。全局唯一。
+
+## Namespaces
+
+k8s可以在同一个物理集群下支持多个虚拟集群，这些虚拟集群叫做namespaces。
+
+### 查看namespace
+
+```
+kubectl get namespaces
+```
+
+k8s有2个初始化namespace:
+
+* **default**  没有指定特定namespaces对象的默认namespace
+* **kube-system** k8s创建的对象的namespace
+
+### 请求中设置namespace
+
+```
+kubectl --namespace=<insert-namespace-name-here> run nginx --image=nginx
+kubectl --namespace=<insert-namespace-name-here> get pods
+```
+
+## Labels and Selectors
+
+Label是附加于对象的key/value对，用来标注对用户有意义的相关属性，不直接作用于底层系统。
+Label用来组织和选择对象的子集，任何对象都可以有一个label的集合。
+
+```
+"labels": {
+  "key1" : "value1",
+  "key2" : "value2"
+}
+```
+
+为了快速查询和查康，系统对label做了正反两个方向的索引。
+
+
+Label selectors用来筛选对象的集合，有2种selector: equality-based和set-based。
+
+Equality-based requirement可以根据label来筛选对象，比如
+
+```
+environment = production
+tier != frontend
+```
+
+Set-based requirement通过集合数据筛选对象，如下
+
+```
+environment in (production, qa)
+tier notin (frontend, backend)
+partition
+!partition
+```
+
